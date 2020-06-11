@@ -1,36 +1,31 @@
-import { inject, observer } from "mobx-react";
+import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import * as React from "react";
 import { Route, Switch } from "react-router-dom";
-import { NotFoundScene } from "./scenes/NotFoundScene";
-import { AuthStore } from "./stores/AuthStore";
 import { TokenExchange } from "./components/ExchangingTokens";
-import { AppBar, Toolbar, Typography } from "@material-ui/core";
 import { DashboardScene } from "./scenes/DashboardScene";
+import { NotFoundScene } from "./scenes/NotFoundScene";
+import { authenticatedSelector } from "./features/authentication/authenticationSlice";
+import { useSelector } from "react-redux";
+import { GitubLogin } from "./authentication/Github";
 
-interface LoggedInProps {
-  auth?: AuthStore;
-}
 
-const LoggedIn: React.FC<LoggedInProps> = inject("auth")(
-  observer(props => {
-    return (
+const LoggedIn: React.FC = (props) => {
+  const isAuthenticated = useSelector(authenticatedSelector)
+  return (
       <Route
         render={() => {
-          return props.auth!.isAuthenticated ? props.children : <DoLogin />;
+          return isAuthenticated ? props.children : <DoLogin />;
         }}
       />
     );
-  })
-);
-interface DoLoginProps {
-  auth?: AuthStore;
 }
-const DoLogin: React.FC<DoLoginProps> = inject("auth")(props => {
-  props.auth!.login();
-  return null;
-});
 
-export const Router: React.FC = inject("auth")(props => {
+const DoLogin: React.FC = (props) => {
+  GitubLogin()
+  return null;
+};
+
+export const Router: React.FC = (props) => {
   return (
     <React.Fragment>
       <AppBar position="static">
@@ -53,4 +48,4 @@ export const Router: React.FC = inject("auth")(props => {
       </Switch>
     </React.Fragment>
   );
-});
+};

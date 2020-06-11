@@ -1,36 +1,30 @@
+import { LinearProgress, Table, TableBody, TableCell, TableHead, TableRow } from "@material-ui/core";
 import * as React from "react";
-import { inject, observer } from "mobx-react";
-import { RepoStore } from "../stores/RepoStore";
-import {
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
-  LinearProgress,
-  TableCell
-} from "@material-ui/core";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRepositories, loadingSelector, repositoriesSelector } from "../features/repositories/repositorySlice";
 
-interface RepositoryListProps {
-  repo?: RepoStore;
-}
-export const RepositoryList: React.FC<RepositoryListProps> = inject("repo")(
-  observer(props => {
-    React.useEffect(() => {
-      props.repo?.fetchRepos();
-    }, [props.repo]);
+export const RepositoryList: React.FC = (props) => {
+  const dispatch = useDispatch()
 
-    return (
-      <Table>
-        <TableHead>
-          <TableCell>Full Name</TableCell>
-          <TableCell>Url</TableCell>
-          <TableCell>Language</TableCell>
-        </TableHead>
-        <TableBody>
-          {props.repo?.isLoading ? (
-            <LinearProgress />
-          ) : (
-            props.repo?.repos.map(repo => (
+  const loading = useSelector(loadingSelector)
+  const repositories = useSelector(repositoriesSelector)
+
+  React.useEffect(() => {
+    dispatch(fetchRepositories())
+  }, [dispatch]);
+
+  return (
+    <Table>
+      <TableHead>
+        <TableCell>Full Name</TableCell>
+        <TableCell>Url</TableCell>
+        <TableCell>Language</TableCell>
+      </TableHead>
+      <TableBody>
+        {loading ? (
+          <LinearProgress />
+        ) : (
+            repositories.map(repo => (
               <TableRow>
                 <TableCell>{repo.full_name}</TableCell>
                 <TableCell>
@@ -40,8 +34,7 @@ export const RepositoryList: React.FC<RepositoryListProps> = inject("repo")(
               </TableRow>
             ))
           )}
-        </TableBody>
-      </Table>
-    );
-  })
-);
+      </TableBody>
+    </Table>
+  );
+};
