@@ -1,5 +1,5 @@
-# React Sample Github Oauth
-This project was develop to study how to implement Github Authentication using Oauth and React
+# React Sample Github Oauth with Redux
+This project was develop to study how to implement Github Authentication using Oauth and React + Redux
 
 # Table of Contents
 1. [Architecture](#architecture)
